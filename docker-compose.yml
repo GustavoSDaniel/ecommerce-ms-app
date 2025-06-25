@@ -1,0 +1,149 @@
+# Define os serviços/containers que serão executados
+services:
+
+  # Serviço do banco de dados PostgreSQL
+  postgres:
+    # Nome do container
+    container_name: ms_pg_sql
+    # Imagem Docker a ser usada (versão padrão do PostgreSQL)
+    image: postgres
+    # Variáveis de ambiente para configuração do PostgreSQL
+    environment:
+      # Usuário padrão do banco de dados
+      POSTGRES_USER: gustavo
+      # Senha do usuário padrão
+      POSTGRES_PASSWORD: gustavo
+      # Diretório onde os dados serão armazenados no container
+      PGDATA: /var/lib/postgresql/data
+    # Configuração de volumes para persistência de dados
+    volumes:
+      # Volume chamado 'postgres' mapeado para o diretório de dados do PostgreSQL
+      - postgres:/var/lib/postgresql/data
+    # Mapeamento de portas (host:container)
+    ports:
+      # Porta 5433 do host mapeada para 5432 do container
+      - 5433:5432
+    # Redes às quais o serviço irá se conectar
+    networks:
+      # Conecta à rede 'microservices-net'
+      - microservices-net
+    # Política de reinicialização do container
+    restart: unless-stopped
+
+  # Serviço do pgAdmin (interface gráfica para PostgreSQL)
+  pgadmin:
+    # Nome do container
+    container_name: ms_pgadmin
+    # Imagem Docker do pgAdmin4
+    image: dpage/pgadmin4
+    # Variáveis de ambiente para configuração do pgAdmin
+    environment:
+      # Email padrão de acesso (com valor padrão caso variável de ambiente não esteja definida)
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin@pgadmin.org}
+      # Senha padrão de acesso (com valor padrão)
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      # Modo de operação (False para modo standalone)
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    # Configuração de volumes para persistência de dados
+    volumes:
+      # Volume chamado 'pgadmin' mapeado para o diretório de dados do pgAdmin
+      - pgadmin:/var/lib/pgadmin
+    # Mapeamento de portas
+    ports:
+      # Porta 5050 do host mapeada para porta 80 do container
+      - 5050:80
+    # Redes às quais o serviço irá se conectar
+    networks:
+      # Conecta à rede 'microservices-net'
+      - microservices-net
+    # Política de reinicialização
+    restart: unless-stopped
+
+  # Serviço do banco de dados MongoDB
+  mongodb:
+    # Nome do container
+    container_name: ms_mong_db
+    # Imagem Docker do MongoDB
+    image: mongo
+    # Mapeamento de portas
+    ports:
+      # Porta 27017 do host mapeada para 27017 do container
+      - 27017:27017
+    # Configuração de volumes para persistência de dados
+    volumes:
+      # Volume chamado 'mongo' mapeado para o diretório padrão de dados do MongoDB
+      - mongo:/data/db
+    # Variáveis de ambiente para configuração do MongoDB
+    environment:
+      # Usuário root do MongoDB
+      - MONGO_INITDB_ROOT_USERNAME=gustavo
+      # Senha do usuário root
+      - MONGO_INITDB_ROOT_PASSWORD=gustavo
+    # Redes às quais o serviço irá se conectar
+    networks:
+      # Conecta à rede 'microservices-net'
+      - microservices-net
+    # Política de reinicialização
+    restart: unless-stopped
+
+  # Serviço do Mongo Express (interface web para MongoDB)
+  mongo-express:
+    # Imagem Docker do Mongo Express
+    image: mongo-express
+    # Nome do container
+    container_name: ms_mongo_express
+    # Política de reinicialização
+    restart: unless-stopped
+    # Mapeamento de portas
+    ports:
+      # Porta 8081 do host mapeada para 8081 do container
+      - 8081:8081
+    # Variáveis de ambiente para configuração
+    environment:
+      # Usuário admin do MongoDB
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=gustavo
+      # Senha do usuário admin
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=gustavo
+      # Servidor MongoDB (deve corresponder ao nome do serviço)
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+    # Conecta à mesma rede do MongoDB
+    networks: # ADIÇÃO IMPORTANTE
+      - microservices-net
+    # Garante que o MongoDB inicie antes
+    depends_on: # ADIÇÃO IMPORTANTE
+      - mongodb
+
+  # Serviço de email de desenvolvimento (MailDev)
+  email-dev:
+    # Nome do container (corrigido de 'email-dav' para 'email-dev')
+    container_name: ms_email_dev
+    # Imagem Docker do MailDev
+    image: maildev/maildev
+    # Mapeamento de portas
+    ports:
+      # Porta 1080 para interface web
+      - 1080:1080
+      # Porta 1025 para SMTP (corrigido de 1025:1032 para 1025:1025)
+      - 1025:1025
+    # Redes às quais o serviço irá se conectar
+    networks:
+      # Conecta à rede 'microservices-net'
+      - microservices-net
+    # Política de reinicialização
+    restart: unless-stopped
+
+# Configuração das redes Docker
+networks:
+  # Define a rede chamada 'microservices-net'
+  microservices-net:
+    # Driver de rede a ser utilizado (bridge é o padrão)
+    driver: bridge
+
+# Configuração dos volumes Docker
+volumes:
+  # Volume para armazenar dados do PostgreSQL
+  postgres:
+  # Volume para armazenar dados do pgAdmin
+  pgadmin:
+  # Volume para armazenar dados do MongoDB
+  mongo:
