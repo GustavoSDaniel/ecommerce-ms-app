@@ -1,0 +1,22 @@
+# Configurações gerais do Spring
+spring:
+  # Define o perfil ativo para esta execução
+  profiles:
+    active: native  # Usa o armazenamento de configurações no sistema de arquivos local (native)
+  application:
+    name: config-server  # Identificação do serviço no Eureka (se aplicável)
+
+  # Configurações específicas do Spring Cloud
+  cloud:
+    config:
+      server:
+        # Configurações para o modo 'native' (armazenamento local)
+        native:
+          # Localizações onde buscar arquivos de configuração
+          search-locations: classpath:/configurations
+          # Observações:
+          # - 'classpath:' refere-se aos recursos dentro do projeto (src/main/resources)
+
+# Configurações do servidor
+server:
+  port: 8888  # Porta padrão para Config Servers (clientes devem usar esta porta)

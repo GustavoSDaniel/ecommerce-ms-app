@@ -1,0 +1,25 @@
+# Configurações do Eureka Server
+eureka:
+  # Configurações da instância do servidor Eureka
+  instance:
+    # Define o hostname da instância do Eureka (neste caso, localhost)
+    hostname: localhost
+  
+  # Configurações do cliente Eureka (o próprio servidor)
+  client:
+    # Impede que este servidor Eureka tente se registrar em si mesmo
+    register-with-eureka: false
+    
+    # Impede que este servidor busque registros de outros servidores Eureka
+    fetch-registry: false
+    
+    # Configura a URL padrão para registro de serviços
+    serviceUrl:
+      # URL completa onde os clientes devem se registrar
+      # Usa variáveis para hostname (localhost) e porta (8761)
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+
+# Configurações gerais do servidor
+server:
+  # Porta onde o servidor Eureka irá rodar (padrão: 8761)
+  port: 8761
