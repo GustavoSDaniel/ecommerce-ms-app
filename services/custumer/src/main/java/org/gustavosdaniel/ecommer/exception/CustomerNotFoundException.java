@@ -1,4 +1,4 @@
-package org.gustavosdaniel.ecommer.custumer;
+package org.gustavosdaniel.ecommer.exception;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

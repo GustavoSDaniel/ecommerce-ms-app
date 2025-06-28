@@ -3,7 +3,11 @@ package org.gustavosdaniel.ecommer.custumer;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
+import org.gustavosdaniel.ecommer.exception.CustomerNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
@@ -13,6 +17,11 @@ public class CustomerService {
 
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
+
+    public  Boolean existsByIdCustomer(String customerId) {
+        return customerRepository.findById(customerId)
+                .isPresent();
+    }
 
     public String createCustumer(@Valid CustomerRequest customerRequest) {
 
@@ -42,5 +51,24 @@ public class CustomerService {
         if (customerRequest.address() != null) { // SE A REQUISIÇÃO DO ENDEREÇO NÃO FOR NULA
             updateCustomer.setAddress(customerRequest.address()); // ALTERE  O ENDEREÇO
         }
-    } //
+    }
+
+    public List<CustomerResponse> findAllCustomers() {
+
+        return customerRepository.findAll()
+                .stream() // Converte a lista em um Stream (fluxo de dados)
+                .map(customerMapper::fromCustomer) //Transforma cada elemento
+                .collect(Collectors.toList());
+    }
+
+    public CustomerResponse findByIdCustomer(String customerId) {
+        return customerRepository.findById(customerId)
+                .map(customerMapper::fromCustomer) //Transforma cada elemento
+                .orElseThrow(() -> new CustomerNotFoundException(format("Não existe cliente com esse ID:: %s", customerId)));
+    }
+
+    public void deleteByIdCustomer(String customerId) {
+
+        customerRepository.deleteById(customerId);
+    }
 }
