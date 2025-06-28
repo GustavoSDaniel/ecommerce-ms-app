@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Setter
 @Builder
 @Document //serve para marcar uma classe como um documento que será persistido no MongoDB
-public class Custumer {
+public class Customer {
 
     @Id
     private String id;

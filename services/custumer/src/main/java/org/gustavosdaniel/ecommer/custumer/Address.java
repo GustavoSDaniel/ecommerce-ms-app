@@ -1,7 +1,6 @@
 package org.gustavosdaniel.ecommer.custumer;
 
 import lombok.*;
-import org.springframework.data.annotation.Id;
 import org.springframework.validation.annotation.Validated;
 
 @AllArgsConstructor
