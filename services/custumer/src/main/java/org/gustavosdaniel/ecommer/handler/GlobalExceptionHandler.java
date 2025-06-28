@@ -14,13 +14,11 @@ import java.util.HashMap;
 public class GlobalExceptionHandler {
 
     // Quando uma CustomerNotFoundException é lançada em qualquer controller
-    // Status: 404 Not Found
-    // Corpo: A mensagem da exceçã
     @ExceptionHandler(CustomerNotFoundException.class)
     public ResponseEntity<String> handle(CustomerNotFoundException exception) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND) // Status HTTP 404
-                .body(exception.getMessage());
+                .body(exception.getMessage()); // Corpo: A mensagem da exceção
     }
 
 

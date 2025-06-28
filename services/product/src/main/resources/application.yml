@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/product
+    username: gustavo
+    password: gustavo
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  # Configurações do Flyway (controle de migrações de banco de dados)
+  flyway:
+    # Cria baseline se o schema não existir
+    baseline-on-migrate: true
+    # Habilita o Flyway
+    enabled: true
+    # Descrição da baseline
+    baseline-description: "inicial"
+    # Versão inicial da baseline de onde começa
+    baseline-version: 0
+    # Usa as mesmas credenciais do datasource
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}
+  application:
+    name: product-service
+server:
+  port: 8050

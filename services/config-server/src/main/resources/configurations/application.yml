@@ -1,0 +1,11 @@
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    server-url:
+      defaultZone: http://localhost:8761/eureka
+spring:
+  cloud:
+    config:
+      # PARA NÃO SOBREESCREVER OS OUTROS application.yml
+      override-system-properties: false
