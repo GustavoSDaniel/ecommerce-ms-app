@@ -1,6 +1,5 @@
 package org.gustavosdaniel.ecommerce.product;
 
-import org.gustavosdaniel.ecommerce.category.Category;
 
 import java.math.BigDecimal;
 
@@ -12,9 +11,15 @@ public record ProductResponse(
 
         String description,
 
+        Double availableQuantity,
+
         BigDecimal price,
 
-        Category category
+        Integer idCategory,
+
+        String categoryName,
+
+        String categoryDescription
 
 ) {
 }

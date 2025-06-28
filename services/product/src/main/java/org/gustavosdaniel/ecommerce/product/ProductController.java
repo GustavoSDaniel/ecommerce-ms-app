@@ -19,6 +19,13 @@ public class ProductController {
         return ResponseEntity.ok(productService.createProduct(productRequest));
     }
 
+    @PostMapping("/purchase")
+    public ResponseEntity<List<ProductPurchaseResponse>> productPurchase(
+            @RequestBody @Valid List<ProductPurchaseRequest> productPurchaseRequests ){
+
+        return ResponseEntity.ok(productService.purchaseProduccts(productPurchaseRequests));
+    }
+
     @PutMapping
     public ResponseEntity<Void> updateProduct(@RequestBody @Valid  ProductRequest productRequest) {
         productService.updateProduct(productRequest);
@@ -31,16 +38,11 @@ public class ProductController {
         return ResponseEntity.ok(productService.findAllProducts());
     }
 
-    @GetMapping("exists/{product-id}")
-    public ResponseEntity<Boolean> existsProduct(@PathVariable("product-id") Integer productId) {
-
-        return ResponseEntity.ok(productService.existsProduct(productId));
-    }
 
     @GetMapping("/{product-id}")
     public ResponseEntity<ProductResponse> findByIdProduct(@PathVariable("product-id") Integer productId) {
-        productService.findByIdProduct(productId);
-        return ResponseEntity.ok().build();
+
+        return ResponseEntity.ok(productService.findByIdProduct(productId));
     }
 
     @DeleteMapping("/{product-id}")

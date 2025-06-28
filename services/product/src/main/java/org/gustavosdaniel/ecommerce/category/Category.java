@@ -1,16 +1,13 @@
 package org.gustavosdaniel.ecommerce.category;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.gustavosdaniel.ecommerce.product.Product;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
-@Validated
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

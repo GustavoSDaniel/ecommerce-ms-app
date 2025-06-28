@@ -1,6 +1,8 @@
 package org.gustavosdaniel.ecommerce.product;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import org.gustavosdaniel.ecommerce.category.Category;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,8 +18,15 @@ public class ProductMapper {
                 .id(productRequest.id())
                 .name(productRequest.name())
                 .description(productRequest.description())
+                .availableQuantity(productRequest.availableQuantity())
                 .price(productRequest.price())
-                .category(productRequest.category())
+                //Classe categoria
+                .category(
+                        Category.builder()
+                                .id(productRequest.idCategory())
+                                .build()
+
+                )
                 .build();
     }
 
@@ -27,7 +36,22 @@ public class ProductMapper {
                 product.getId(),
                 product.getName(),
                 product.getDescription(),
+                product.getAvailableQuantity(),
                 product.getPrice(),
-                product.getCategory());
+                // Essas são da classe caregoria
+                product.getCategory().getId(),
+                product.getCategory().getName(),
+                product.getCategory().getDescription()
+                );
+    }
+
+    public ProductPurchaseResponse toProductPurchaseResponse(Product product,  Double quantity) {
+        return new ProductPurchaseResponse(
+                product.getId(),
+                product.getName(),
+                product.getDescription(),
+                product.getPrice(),
+                quantity
+        );
     }
 }

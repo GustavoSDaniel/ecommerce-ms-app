@@ -1,9 +1,14 @@
 package org.gustavosdaniel.ecommerce.product;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.gustavosdaniel.ecommerce.exception.ProductNotFoundException;
+import org.gustavosdaniel.ecommerce.exception.ProductPurchaseException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,33 +24,16 @@ public class ProductService {
 
     public Integer createProduct( ProductRequest productRequest) {
 
-        Product product = productRepository.save(productMapper.toProduct(productRequest));
+        Product product = productMapper.toProduct(productRequest);
 
-        return product.getId();
+        return productRepository.save(product).getId();
     }
 
-    public void updateProduct( ProductRequest productRequest) {
+    public ProductResponse findByIdProduct(Integer productId) {
 
-        Product updatedProduct = productRepository.findById(productRequest.id())
-                .orElseThrow(() -> new ProductNotFoundException(format("Id informado não é valido %s", productRequest.id())));
-       mergeProduct(updatedProduct, productRequest);
-       productRepository.save(updatedProduct);
-    }
-
-    private void mergeProduct(Product updatedProduct, ProductRequest productRequest) {
-
-        if (StringUtils.isNotBlank(productRequest.name())) {
-            updatedProduct.setName(productRequest.name());
-        }
-        if (StringUtils.isNotBlank(productRequest.description())) {
-            updatedProduct.setName(productRequest.description());
-        }
-        if (productRequest.price() != null) {
-            updatedProduct.setDescription(productRequest.price().toString());
-        }
-        if (productRequest.category() != null) {
-            updatedProduct.setCategory(productRequest.category());
-        }
+        return productRepository.findById(productId)
+                .map(productMapper::fromProduct)
+                .orElseThrow(() -> new EntityNotFoundException((format("O Id solicitado não existe %s", productId))));
     }
 
     public List<ProductResponse> findAllProducts() {
@@ -56,15 +44,62 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
-    public Boolean existsProduct(Integer productId) {
+    public List<ProductPurchaseResponse> purchaseProduccts(List<ProductPurchaseRequest> productPurchaseRequests) {
+        var productIds = productPurchaseRequests
+                .stream()
+                .map(ProductPurchaseRequest::idProduct)
+                .toList();
 
-        return productRepository.findById(productId).isPresent();
+        // Busca os produtos correspondentes no banco de dados
+        var storedProducts = productRepository.findAllByIdInOrderById(productIds);
+
+        //Valida se todos os produtos existem
+        if (productIds.size() != storedProducts.size() ) {
+            throw new ProductPurchaseException("Um ou mais desses produtos não existem");
+        }
+
+        var storedRequest = productPurchaseRequests
+                .stream()
+                .sorted(Comparator.comparing(ProductPurchaseRequest::idProduct)) // Ordena os Ids do menor para o maior
+                .toList(); // Entrega a lista ordenada
+
+        var purchasedProducts = new ArrayList<ProductPurchaseResponse>();
+
+        for (int i = 0; i < storedProducts.size(); i++) {
+
+            var product = storedProducts.get(i); //Quantidade de itens do estoque
+            var productRequest = storedRequest.get(i); // Quantidade de itens solicitados
+
+            if (product.getAvailableQuantity() < productRequest.quantity()){
+                throw new ProductPurchaseException("Quantidade insuficiente para o produto com o ID:: " + productRequest.idProduct());
+            }
+
+            var newAvailableQuantity = product.getAvailableQuantity() - productRequest.quantity();
+            product.setAvailableQuantity(newAvailableQuantity);
+            productRepository.save(product);
+
+            purchasedProducts.add(productMapper.toProductPurchaseResponse(product, productRequest.quantity()));
+        }
+
+            return purchasedProducts;
     }
 
-    public Integer findByIdProduct(Integer productId) {
-        productRepository.findById(productId)
-                .orElseThrow(() -> new ProductNotFoundException(format("O Id solicitado não existe %s", productId)));
-        return productId;
+
+
+    public void updateProduct( ProductRequest productRequest) {
+
+        Product updatedProduct = productRepository.findById(productRequest.id())
+                .orElseThrow(() -> new EntityNotFoundException(format("Id informado não é valido %s", productRequest.id())));
+       mergeProduct(updatedProduct, productRequest);
+       productRepository.save(updatedProduct);
+    }
+
+    private void mergeProduct(Product updatedProduct, ProductRequest productRequest) {
+
+        if (productRequest.price() != null) {
+            updatedProduct.setPrice(productRequest.price());
+        }
+
     }
 
 
@@ -77,4 +112,6 @@ public class ProductService {
         return null;
 
     }
+
+
 }
