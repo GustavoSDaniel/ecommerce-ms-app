@@ -44,6 +44,8 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+
+
     public List<ProductPurchaseResponse> purchaseProduccts(List<ProductPurchaseRequest> productPurchaseRequests) {
         var productIds = productPurchaseRequests
                 .stream()
@@ -114,4 +116,18 @@ public class ProductService {
     }
 
 
+    public List<ProductResponse> findByNameStartingWith(String productName) {
+
+       List<Product> products = productRepository.findByNameStartingWithIgnoreCaseOrderByNameAsc(productName);
+
+        if (products.isEmpty()) {
+            throw new EntityNotFoundException(format("Produto não encontrado", productName));
+        }
+
+        return products
+                .stream()
+                .map(productMapper::fromProduct)
+                .collect(Collectors.toList());
+
+    }
 }

@@ -41,6 +41,11 @@ public class CustomerController {
         return ResponseEntity.ok(customerService.findByIdCustomer(customerId));
     }
 
+    @GetMapping("/seach/{name}")
+    public ResponseEntity<List<CustomerResponse>> findByFirstName(@PathVariable("name")String name) {
+        return ResponseEntity.ok(customerService.findByFirstName(name));
+    }
+
     @DeleteMapping("/{customer-id}")
     public ResponseEntity<Void> deleteByIdCustomer(@PathVariable("customer-id") String customerId) {
 

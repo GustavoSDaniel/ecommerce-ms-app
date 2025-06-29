@@ -29,7 +29,7 @@ public class ProductController {
     @PutMapping
     public ResponseEntity<Void> updateProduct(@RequestBody @Valid  ProductRequest productRequest) {
         productService.updateProduct(productRequest);
-        return ResponseEntity.accepted().build();
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping
@@ -45,9 +45,17 @@ public class ProductController {
         return ResponseEntity.ok(productService.findByIdProduct(productId));
     }
 
+    @GetMapping("/search/{name}")
+    public ResponseEntity<List<ProductResponse>> findByNameStartingWith(@PathVariable("name") String productName) {
+       ;
+
+        return ResponseEntity.ok( productService.findByNameStartingWith(productName));
+    }
+
+
     @DeleteMapping("/{product-id}")
-    public ResponseEntity<Void> deleteByIdProduct(@PathVariable("product-id") Integer productId) {
+    public ResponseEntity<Void> deleteByIdProduct(@PathVariable("product-id") @Valid Integer productId) {
         productService.deleteByIdProduct(productId);
-       return ResponseEntity.accepted().build();
+       return ResponseEntity.ok().build();
     }
 }

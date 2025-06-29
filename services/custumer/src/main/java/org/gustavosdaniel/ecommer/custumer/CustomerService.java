@@ -67,6 +67,16 @@ public class CustomerService {
                 .orElseThrow(() -> new CustomerNotFoundException(format("Não existe cliente com esse ID:: %s", customerId)));
     }
 
+    public List<CustomerResponse> findByFirstName(String firstName) {
+        var customers = customerRepository.findByNameStartingWithIgnoreCaseOrderByNameAsc(firstName);
+
+        if (customers.isEmpty()) {
+            throw new CustomerNotFoundException("Primeiro nnome do cliente não encontrado");
+        }
+
+        return customers.stream().map(customerMapper::fromCustomer).collect(Collectors.toList());
+    }
+
     public void deleteByIdCustomer(String customerId) {
 
         customerRepository.deleteById(customerId);
