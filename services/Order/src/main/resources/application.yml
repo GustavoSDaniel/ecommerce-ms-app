@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: Order-service
+  config:
+    import: optionaç:configserver:http//localhost:8888

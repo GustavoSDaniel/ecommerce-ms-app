@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
 
-import static sun.security.timestamp.TSResponse.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -47,7 +48,7 @@ public class GlobalExceptionHandler {
                     erros.put(fieldName,errorMessage );
                 });
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
+                .status(BAD_REQUEST)
                 .body(new ErrorResponse(erros)); // Resposta estruturada
     }
 }

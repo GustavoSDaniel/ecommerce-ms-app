@@ -68,7 +68,7 @@ public class CustomerService {
     }
 
     public List<CustomerResponse> findByFirstName(String firstName) {
-        var customers = customerRepository.findByNameStartingWithIgnoreCaseOrderByNameAsc(firstName);
+        var customers = customerRepository.findByFirstNameStartingWithIgnoreCaseOrderByFirstNameAsc(firstName);
 
         if (customers.isEmpty()) {
             throw new CustomerNotFoundException("Primeiro nnome do cliente não encontrado");
